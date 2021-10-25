@@ -1,1 +1,1 @@
-# TOHAN: A One-step Approach towards Few-shotHypothesis Adaptation
+# TOHAN: A One-step Approach towards Few-shot Hypothesis Adaptation
