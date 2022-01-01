@@ -1,5 +1,5 @@
 # TOHAN: A One-step Approach towards Few-shot Hypothesis Adaptation
-Hi, this is the core code of our rencent work "TOHAN: A One-step Approach towards Few-shot Hypothesis Adaptation" (NeurIPS2021, https://arxiv.org/abs/2106.06326). This work is done by
+Hi, this is the core code of our rencent work "TOHAN: A One-step Approach towards Few-shot Hypothesis Adaptation" (NeurIPS 2021 Spotlight, https://arxiv.org/abs/2106.06326). This work is done by
 
 - Haoang Chi (NUDT), haoangchi618@gmail.com
 - Dr. Feng Liu (UTS), feng.liu@uts.edu.au
@@ -42,7 +42,7 @@ If you are using this code for your own researching, please consider citing
                William Cheung and
                James Kwok},
   title     = {TOHAN: A One-step Approach towards Few-shot Hypothesis Adaptation},
-  journal   = {arXiv preprint arXiv:2106.06326},
+  journal   = {NeurIPS},
   year      = {2021}
 }
 ```
