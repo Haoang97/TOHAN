@@ -28,22 +28,19 @@ CUDA_VISIBLE_DEVICES=0 python main.py
 
 in your terminal (using the first GPU device).
 
+Our pre-trained models can be downloaded in the following link.
+
+https://drive.google.com/drive/folders/1IIRJSDvJ9WYVGbZRNOpkU0STdVfmcjfb?usp=sharing
+
 # Citation
 If you are using this code for your own researching, please consider citing
 
 ```
-@article{chi2021tohan,
-  author = {Haoang Chi and
-               Feng Liu and
-               Wenjing Yang and
-               Long Lan and
-               Tongliang Liu and
-               Bo Han and
-               William Cheung and
-               James Kwok},
-  title     = {TOHAN: A One-step Approach towards Few-shot Hypothesis Adaptation},
-  journal   = {NeurIPS},
-  year      = {2021}
+@inproceedings{chi2021tohan,
+ author = {Chi, Haoang and Liu, Feng and Yang, Wenjing and Lan, Long and Liu, Tongliang and Han, Bo and Cheung, William and Kwok, James},
+ booktitle = {Advances in Neural Information Processing Systems},
+ title = {TOHAN: A One-step Approach towards Few-shot Hypothesis Adaptation},
+ year = {2021}
 }
 ```
 # Acknowledgment
