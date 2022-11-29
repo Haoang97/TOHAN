@@ -22,7 +22,7 @@ parser.add_argument('--generate_epoch',type=int,default=500)
 parser.add_argument('--n_target_samples',type=int,default=7)
 parser.add_argument('--batch_size',type=int,default=64)
 parser.add_argument('--generate_batch',type=int,default=32)
-parser.add_argument('--lr',type=float,default=0.0001)
+parser.add_argument('--lr',type=float,default=0.001)
 parser.add_argument('--seed',type=int,default=1)
 parser.add_argument('--generator_dim',type=int,default=64)
 parser.add_argument('--gd_dim',type=int,default=128)
@@ -75,7 +75,7 @@ def generator_loss(G_result, X_t, Y_t, num, target, const, batch_size):
     return G_train_loss
 
 def creat_optimizer(target):
-    return optim.Adam(G[str(target)].parameters(), lr=opt['lr'], betas=(0.5, 0.999))
+    return optim.Adam(G[str(target)].parameters(), lr=opt['lr']*0.1, betas=(0.5, 0.999))
 
 def beta(epoch):
     return 2/(1+np.exp(-10*epoch))-1
@@ -150,6 +150,8 @@ save_acc =[]
 test_dataloader = dataloader.get_testloader(opt['task'],batch_size=opt['batch_size'])
 
 for epoch in range(1, opt['generate_epoch']+1):
+    encoder = encoder.eval()
+    classifier = classifier.eval()
     X_s = torch.Tensor(classes*opt['generate_batch'],opt['data_channel'],opt['data_size'],opt['data_size'])
     Y_s = torch.LongTensor(classes*opt['generate_batch'])
 
@@ -183,10 +185,11 @@ for epoch in range(1, opt['generate_epoch']+1):
 
         discriminator = DCD(input_features=opt['gd_dim'])
         discriminator = discriminator.to(device)
+        discriminator.train()
 
         loss_fn = torch.nn.CrossEntropyLoss()
 
-        optimizer_D = torch.optim.Adam(discriminator.parameters(),lr=opt['lr'])
+        optimizer_D = torch.optim.Adam(discriminator.parameters(),lr=opt['lr']*0.1)
 
         for epoch_2 in range(opt['gd_epoch']):
             # data
@@ -230,15 +233,18 @@ for epoch in range(1, opt['generate_epoch']+1):
             print("pretrain group discriminator----Epoch %d/%d loss:%.3f"%(epoch_2+1,opt['gd_epoch'],np.mean(loss_mean)))
 
     if epoch > opt['generate_epoch']-opt['model_epoch']:
+        encoder.train()
+        classifier.train()
+        discriminator.eval()
         index = torch.randperm(classes*opt['generate_batch'])
         X_s = X_s[index]
         Y_s = Y_s[index]
         
         optimizer_g_h=torch.optim.Adam(list(encoder.parameters())+list(classifier.parameters()),lr=opt['lr'])
-        optimizer_d=torch.optim.Adam(discriminator.parameters(),lr=opt['lr'])
+        optimizer_d=torch.optim.Adam(discriminator.parameters(),lr=opt['lr']*0.1)
 
-        scheduler_g_h=torch.optim.lr_scheduler.StepLR(optimizer_g_h,step_size=10,gamma=0.9)
-        scheduler_d=torch.optim.lr_scheduler.StepLR(optimizer_d,step_size=10,gamma=0.9)
+        scheduler_g_h=torch.optim.lr_scheduler.StepLR(optimizer_g_h,step_size=20,gamma=0.1)
+        scheduler_d=torch.optim.lr_scheduler.StepLR(optimizer_d,step_size=20,gamma=0.1)
 
         #---training g and h , group discriminator is frozen
 
@@ -303,7 +309,7 @@ for epoch in range(1, opt['generate_epoch']+1):
                 loss_X2=loss_fn(y_pred_X2,ground_truths_y2)
                 loss_dcd=loss_fn(y_pred_dcd,dcd_labels)
 
-                loss_sum =  loss_X2 - beta(epoch-opt['generate_epoch']+opt['gd_epoch']) * loss_dcd #
+                loss_sum =  loss_X2 + beta(epoch-opt['generate_epoch']+opt['gd_epoch']) * loss_dcd #
 
                 loss_sum.backward()
                 g_h_loss_mean.append(loss_sum.item())
@@ -317,6 +323,9 @@ for epoch in range(1, opt['generate_epoch']+1):
                 dcd_labels = []
                 
         #----training group discriminator ,g and h frozen
+        encoder.eval()
+        classifier.eval()
+        discriminator.train()
         X1 = []
         X2 = []
         ground_truths = []
@@ -344,20 +353,21 @@ for epoch in range(1, opt['generate_epoch']+1):
                 loss_d.backward()
                 optimizer_d.step()
                 scheduler_d.step()
-                # loss_mean.append(loss.item())
                 d_loss_mean.append(loss_d.item())
                 X1 = []
                 X2 = []
                 ground_truths = []
         #testing
         acc = 0
-        for data, labels in test_dataloader:
-            data = data.to(device)
-            labels = labels.to(device)
-            y_test_pred = classifier(encoder(data))
-            acc += (torch.max(y_test_pred, 1)[1] == labels).float().mean().item()
+        encoder.eval()
+        classifier.eval()
+        with torch.no_grad():
+            for data, labels in test_dataloader:
+                data = data.to(device)
+                labels = labels.to(device)
+                y_test_pred = classifier(encoder(data))
+                acc += (torch.max(y_test_pred, 1)[1] == labels).float().mean().item()
 
         accuracy = round(acc / float(len(test_dataloader)), 3)
         save_acc.append(accuracy)
         print("step3----Epoch %d/%d    g_h_loss: %.3f    d_loss: %.3f    accuracy: %.3f " % (epoch, opt['generate_epoch'],np.mean(g_h_loss_mean),np.mean(d_loss_mean), 100*accuracy))
-
