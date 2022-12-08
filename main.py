@@ -47,10 +47,9 @@ def metric(G_result, X, n, batch_size):
     for i in range(batch_size):
         sum_abs_diff = 0
         for j in range(n):
-            abs_diff = l1loss(G_result[i],X[j])
-            w = torch.pow(abs_diff, 2)
-            w = w / torch.norm(w)
-            sum_abs_diff += w * abs_diff
+            abs_diff = torch.abs(G_result[i].view(-1) - X[j].view(-1))
+            w = abs_diff / torch.norm(abs_diff, p=2, keepdim=False)
+            sum_abs_diff += torch.dot(w, abs_diff)
         sum_abs_diff = sum_abs_diff/n
         all_sum += sum_abs_diff
     all_sum = all_sum/batch_size
