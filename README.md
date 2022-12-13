@@ -48,3 +48,10 @@ This work was partially supported by the National Natural Science Foundation of 
 91948303-1, No. 61803375, No. 12002380, No. 62106278, No. 62101575, No. 61906210)
 and the National Grand R&D Plan (Grant No. 2020AAA0103501). FL would also like to thank Dr.
 Yanbin Liu for productive discussions.
+
+# Two bugs
+We just found two bugs in the source codes regrettably.
+1. We did not use `encoder.eval()` and `classifier.eval()` to completely freeze the source model in the generation process.
+2. The implementation of the augmented L1 distance degraded into the naive L1 distance.
+
+We have repaired the two bugs and the modified results are coming soon. Sorry for the trouble caused to you.
