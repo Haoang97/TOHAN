@@ -93,6 +93,14 @@ For digital tasks,
 |      | T+FADA | 27.1 | 27.0 | 29.2 | 30.0 | 31.6 | 33.9 | 35.9 |
 |      | TOHAN  | 28.3 | 28.9 | 32.2 | 30.8 | 32.0 | 34.8 | 37.4 |
 
+For objective tasks,
+|       | S+FADA | T+FADA | TOHAN |
+|-------|--------|--------|-------|
+| CF2SL | 72.2   | 71.0   | 72.5  |
+| SL2CF | 57.1   | 55.3   | 57.0  |
+
+After fixing the bugs, most of the results improved, and we will update a new arXiv version soon.
+
 # Citation
 If you are using this code for your own researching, please consider citing
 
